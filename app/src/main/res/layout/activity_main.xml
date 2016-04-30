@@ -8,10 +8,17 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
-    <include
-        layout="@layout/app_bar_main"
+    <!--<include-->
+        <!--android:id="@+id/appbar"-->
+        <!--layout="@layout/app_bar_main" />-->
+
+    <FrameLayout
+        android:id="@+id/frameLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_below="@+id/appbar"
+        android:scrollbars="none"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"
