@@ -1,11 +1,13 @@
 package com.cynbean.keep;
 
 import android.content.Context;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 
 import com.cynbean.keep.entity.Note;
 
@@ -25,6 +27,8 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
         this.notes = notes;
         this.mContext = mContext;
     }
+
+
 
     @Override
     public NoteAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {

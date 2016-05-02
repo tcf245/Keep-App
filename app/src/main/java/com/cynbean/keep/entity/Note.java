@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.Set;
 
 /**
- * Created by BFD_303 on 2016/4/30.
+ * Created by tcf24 on 2016/4/11.
  */
 public class Note implements Serializable{
     private int id;
@@ -16,7 +16,17 @@ public class Note implements Serializable{
     private int status;
     private Date create_time;
     private Date update_time;
+
     private User owner;
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
+
     private Set<Tag> tags;
 
     public int getId() {
@@ -51,6 +61,14 @@ public class Note implements Serializable{
         this.color = color;
     }
 
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
+
     public String getPic() {
         return pic;
     }
@@ -83,19 +101,40 @@ public class Note implements Serializable{
         this.update_time = update_time;
     }
 
-    public User getOwner() {
-        return owner;
+    @Override
+    public String toString() {
+        return "Note{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", color=" + color +
+                ", pic='" + pic + '\'' +
+                ", status=" + status +
+                ", create_time=" + create_time +
+                ", update_time=" + update_time +
+                ", owner=" + owner +
+                ", tags=" + tags +
+                '}';
     }
 
-    public void setOwner(User owner) {
-        this.owner = owner;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Note)) return false;
+
+        Note note = (Note) o;
+
+        if (id != note.id) return false;
+        if (!title.equals(note.title)) return false;
+        return owner.equals(note.owner);
+
     }
 
-    public Set<Tag> getTags() {
-        return tags;
-    }
-
-    public void setTags(Set<Tag> tags) {
-        this.tags = tags;
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + title.hashCode();
+        result = 31 * result + owner.hashCode();
+        return result;
     }
 }
