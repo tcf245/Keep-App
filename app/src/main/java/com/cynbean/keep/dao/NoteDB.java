@@ -1,14 +1,8 @@
-package com.cynbean.keep.db;
+package com.cynbean.keep.dao;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-
-import org.apache.commons.io.FileUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.sql.SQLOutput;
 
 /**
  * Created by BFD_303 on 2016/5/2.

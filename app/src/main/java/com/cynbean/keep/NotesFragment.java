@@ -15,13 +15,11 @@ import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ProgressBar;
 
-import com.cynbean.keep.db.NoteDB;
+import com.cynbean.keep.dao.NoteDB;
 import com.cynbean.keep.entity.Note;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import me.drakeet.materialdialog.MaterialDialog;
 
 /**
  * Created by BFD_303 on 2016/4/30.

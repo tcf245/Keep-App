@@ -1,8 +1,5 @@
 package com.cynbean.keep;
 
-import android.database.sqlite.SQLiteDatabase;
-
-import com.cynbean.keep.db.NoteDB;
 import com.cynbean.keep.entity.Note;
 
 import java.util.ArrayList;

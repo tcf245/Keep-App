@@ -11,4 +11,6 @@
     <string name="hint_title">Title</string>
     <string name="hint_content">Content</string>
     <string name="press_again_exit_app">再按一次退出程序</string>
+    <string name="username">用户名:</string>
+    <string name="password">密    码:</string>
 </resources>

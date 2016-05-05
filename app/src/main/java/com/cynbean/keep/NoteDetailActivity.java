@@ -10,7 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.cynbean.keep.db.NoteDB;
+import com.cynbean.keep.dao.NoteDB;
 import com.cynbean.keep.entity.Note;
 import com.cynbean.keep.util.Constant;
 
@@ -104,40 +104,40 @@ public class NoteDetailActivity extends AppCompatActivity{
 
     }
 
-    /**
-     * 保存对笔记内容的修改
-     */
-    private void saveNote() {
-        boolean isUpdate = true;
-        String title = etTitle.getText().toString();
-        String content = etContent.getText().toString();
-
-        if (note.getTitle().equals(title) && note.getContent().equals(content)){
-                isUpdate = false;
-        }
-
-        if(isUpdate){
-
-            note.setTitle(title);
-            note.setContent(content);
-            note.setUpdate_time(new Date());
-            if(isNew){
-                note.setCreate_time(new Date());
-            }
-            ContentValues cv = new ContentValues();
-
-            cv.put(Constant.FIELD_TITLE, note.getTitle());
-            cv.put(Constant.FIELD_CONTENT, note.getContent());
-            cv.put(Constant.FIELD_UPDATE_TIME, String.valueOf(note.getUpdate_time()));
-
-            if(isNew){
-                cv.put(Constant.FIELD_CREATE_TIME, String.valueOf(note.getCreate_time()));
-                dbWrite.insert(Constant.TABLE_NOTE, null, cv);
-            }else{
-                dbWrite.update(Constant.TABLE_NOTE,cv, Constant.FIELD_ID + "=?", new String[]{note.getId()+""});
-            }
-        }
-    }
+//    /**
+//     * 保存对笔记内容的修改
+//     */
+//    private void saveNote() {
+//        boolean isUpdate = true;
+//        String title = etTitle.getText().toString();
+//        String content = etContent.getText().toString();
+//
+//        if (note.getTitle().equals(title) && note.getContent().equals(content)){
+//                isUpdate = false;
+//        }
+//
+//        if(isUpdate){
+//
+//            note.setTitle(title);
+//            note.setContent(content);
+//            note.setUpdate_time(new Date());
+//            if(isNew){
+//                note.setCreate_time(new Date());
+//            }
+//            ContentValues cv = new ContentValues();
+//
+//            cv.put(Constant.FIELD_TITLE, note.getTitle());
+//            cv.put(Constant.FIELD_CONTENT, note.getContent());
+//            cv.put(Constant.FIELD_UPDATE_TIME, String.valueOf(note.getUpdate_time()));
+//
+//            if(isNew){
+//                cv.put(Constant.FIELD_CREATE_TIME, String.valueOf(note.getCreate_time()));
+//                dbWrite.insert(Constant.TABLE_NOTE, null, cv);
+//            }else{
+//                dbWrite.update(Constant.TABLE_NOTE,cv, Constant.FIELD_ID + "=?", new String[]{note.getId()+""});
+//            }
+//        }
+//    }
 
 
 }
