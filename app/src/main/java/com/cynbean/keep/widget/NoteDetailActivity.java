@@ -1,4 +1,4 @@
-package com.cynbean.keep;
+package com.cynbean.keep.widget;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
@@ -10,7 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.cynbean.keep.dao.NoteDB;
+import com.cynbean.keep.R;
 import com.cynbean.keep.entity.Note;
 import com.cynbean.keep.util.Constant;
 
@@ -34,8 +34,6 @@ public class NoteDetailActivity extends AppCompatActivity{
 
     private Note note;
     private boolean isNew = true;
-    private NoteDB db;
-    private SQLiteDatabase dbRead,dbWrite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,10 +46,6 @@ public class NoteDetailActivity extends AppCompatActivity{
 
         bottom = (Toolbar) findViewById(R.id.toolbar);
         setFAB();
-
-        db = new NoteDB(this);
-        dbRead = db.getReadableDatabase();
-        dbWrite = db.getWritableDatabase();
 
         initDetails();
 

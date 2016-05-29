@@ -1,10 +1,9 @@
 package com.cynbean.keep;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.view.Gravity;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -15,6 +14,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import com.cynbean.keep.fragment.NotesFragment;
+import com.cynbean.keep.util.BaseApplication;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -48,13 +50,21 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        BaseApplication application = BaseApplication.getInstance();
+        if(application.getToken() == ""){
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivityForResult(intent, 0);
+        }
 
-        switchToNote();
+        if (application.getToken() != ""){
+            switchToNote();
+        }
+
     }
 
     private void switchToNote() {
         getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, new NotesFragment()).commit();
-//        mToolbar.setTitle("Notes");
+        mToolbar.setTitle("Notes");
     }
 
     @Override
@@ -119,6 +129,11 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_send) {
 
+        }else if (id == R.id.nav_logout) {
+            BaseApplication application = BaseApplication.getInstance();
+            application.setToken("");
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivityForResult(intent, 0);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

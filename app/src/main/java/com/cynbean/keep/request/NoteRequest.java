@@ -1,24 +1,16 @@
 package com.cynbean.keep.request;
 
 import com.cynbean.keep.entity.Note;
+import com.cynbean.keep.util.Constant;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
-
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 
 import java.util.List;
 
@@ -29,55 +21,36 @@ public class NoteRequest {
 
     private static AsyncHttpClient client = new AsyncHttpClient(true, 80, 443);
 
-    private static final String BASE_URL = "https://api.douban.com/v2/";
-
-    private static String getAbsoluteUrl(String relativeUrl) {
-        return BASE_URL + relativeUrl;
-    }
-
     public interface NoteResponse<T> {
         void onData(T data);
     }
 
-    public static void searchNotes(String name, final NoteResponse<List<Note>> response) {
+    /**
+     * 获取用户所有记事请求
+     * @param token     用户令牌
+     * @param response  数据处理接口
+     *
+     * {"data":[{"color":0,"content":"测试","createTime":"2016-05-22 16:48:39","id":5,"pic":"noteFile/1463906919033.jpg","status":0,"tags":[],"title":"测试","user":{"$ref":"$.data[0].user"}}],"flag":true,"msg":"sucesess!"}
+     */
+    public static void findAllNotes(String token, final NoteResponse<String> response) {
         RequestParams params = new RequestParams();
-        params.put("q", name);
-        params.put("start", 0);
-        params.put("end", 50);
+        params.put("token", token);
 
-        client.get(getAbsoluteUrl(""), params, new AsyncHttpResponseHandler() {
+        client.get(Constant.getAbsoluteUrl(Constant.LIST), params, new AsyncHttpResponseHandler() {
             @Override
-            public void onSuccess(int statusCode, org.apache.http.Header[] headers, byte[] bytes) {
-
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                try {
+                    String json = responseBody.toString();
+                    response.onData(json);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-
             @Override
-            public void onFailure(int statusCode, org.apache.http.Header[] headers, byte[] bytes, Throwable throwable) {
+            public void onFailure(int statusCode, Header[] headers, byte[] bytes, Throwable throwable) {
 
             }
         });
-
-//        client.get(getAbsoluteUrl("book/search"), params, new AsyncHttpResponseHandler() {
-//            @Override
-//            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-//                try {
-//                    Gson gson = new Gson();
-//                    JSONObject json = new JSONObject(new String(responseBody));
-//                    JSONArray jaBooks = json.optJSONArray("notes");
-//                    List<Note> notes = gson.fromJson(jaBooks.toString(), new TypeToken<List<Note>>() {
-//                    }.getType());
-//                    response.onData(notes);
-//
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//
-//            }
-//
-//            @Override
-//            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-//
-//            }
-//        });
     }
+
 }

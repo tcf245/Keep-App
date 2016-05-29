@@ -1,4 +1,4 @@
-package com.cynbean.keep;
+package com.cynbean.keep.fragment;
 
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
@@ -15,11 +15,19 @@ import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ProgressBar;
 
-import com.cynbean.keep.dao.NoteDB;
+import com.alibaba.fastjson.JSON;
+import com.cynbean.keep.request.DataTest;
+import com.cynbean.keep.request.NoteRequest;
+import com.cynbean.keep.util.BaseApplication;
+import com.cynbean.keep.widget.NoteAdapter;
+import com.cynbean.keep.widget.NoteDetailActivity;
+import com.cynbean.keep.R;
+import com.cynbean.keep.widget.RecycleItemClickListener;
 import com.cynbean.keep.entity.Note;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by BFD_303 on 2016/4/30.
@@ -32,8 +40,6 @@ public class NotesFragment extends Fragment {
     private FloatingActionButton mFabButton;
     private List<Note> notes = new ArrayList<Note>();
 
-
-    private NoteDB db;
     private SQLiteDatabase dbRead,dbWrite;
 
     private static final int ANIM_DURATION_FAB = 400;
@@ -51,14 +57,21 @@ public class NotesFragment extends Fragment {
 
         mProgressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 
-        //数据库操作
-        db = new NoteDB(getContext());
-        dbRead = db.getReadableDatabase();
-        dbWrite = db.getWritableDatabase();
-
         //获取测试数据
-        DataRequest dataRequest = new DataRequest();
-        notes = dataRequest.getTestData();
+        DataTest dataTest = new DataTest();
+        notes = dataTest.getTestData();
+
+        BaseApplication application = BaseApplication.getInstance();
+
+        NoteRequest noteRequest = new NoteRequest();
+        noteRequest.findAllNotes(application.getToken(), new NoteRequest.NoteResponse<String>() {
+            @Override
+            public void onData(String data) {
+                Map<String,Object> map = (Map<String, Object>) JSON.parse(data);
+                notes = (List<Note>) map.get("data");
+            }
+        });
+
 
         //将数据与context封装进adapter
         mAdapter = new NoteAdapter(notes, getContext());
