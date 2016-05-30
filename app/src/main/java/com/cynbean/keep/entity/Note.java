@@ -17,14 +17,14 @@ public class Note implements Serializable{
     private Date create_time;
     private Date update_time;
 
-    private User owner;
+    private User user;
 
-    public User getOwner() {
-        return owner;
+    public User getUser() {
+        return user;
     }
 
-    public void setOwner(User owner) {
-        this.owner = owner;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     private Set<Tag> tags;
@@ -112,7 +112,7 @@ public class Note implements Serializable{
                 ", status=" + status +
                 ", create_time=" + create_time +
                 ", update_time=" + update_time +
-                ", owner=" + owner +
+                ", user=" + user +
                 ", tags=" + tags +
                 '}';
     }
@@ -120,21 +120,23 @@ public class Note implements Serializable{
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Note)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
 
         Note note = (Note) o;
 
-        if (id != note.id) return false;
+        if (color != note.color) return false;
         if (!title.equals(note.title)) return false;
-        return owner.equals(note.owner);
+        if (!content.equals(note.content)) return false;
+        return pic.equals(note.pic);
 
     }
 
     @Override
     public int hashCode() {
-        int result = id;
-        result = 31 * result + title.hashCode();
-        result = 31 * result + owner.hashCode();
+        int result = title.hashCode();
+        result = 31 * result + content.hashCode();
+        result = 31 * result + color;
+        result = 31 * result + pic.hashCode();
         return result;
     }
 }

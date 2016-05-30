@@ -23,7 +23,18 @@
             android:layout_height="match_parent"
             android:layout_below="@+id/appbar"
             android:scrollbars="none"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="tvInfo"
+                android:id="@+id/tvInfo"
+                android:layout_gravity="center_horizontal|top" />
+        </FrameLayout>
+
+
     </android.support.design.widget.CoordinatorLayout>
 
     <android.support.design.widget.NavigationView

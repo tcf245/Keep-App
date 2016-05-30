@@ -1,6 +1,7 @@
 package com.cynbean.keep;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -11,6 +12,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cynbean.keep.request.UserRequest;
+
+import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -73,7 +76,25 @@ public class SignupActivity extends AppCompatActivity {
         String password = _passwordText.getText().toString();
 
         UserRequest userRequest = new UserRequest();
-        userRequest.registerAsynRequest(email,password);
+        userRequest.registerAsynRequest(email, password, new UserRequest.UserResponse<Map<String, Object>>() {
+            @Override
+            public void onData(Map<String, Object> data) {
+                try {
+                    boolean flag = (boolean) data.get("flag");
+                    String msg = (String) data.get("msg");
+                    if (flag) {
+                        Toast.makeText(SignupActivity.this, "恭喜注册成功，请登录。。", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivityForResult(intent, 0);
+                    }
+                }catch(Exception e){
+                    Toast.makeText(SignupActivity.this, "注册失败，请检查网络情况", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivityForResult(intent, 0);
+                }
+
+            }
+        });
 
         new android.os.Handler().postDelayed(
                 new Runnable() {

@@ -13,10 +13,13 @@ public class Constant {
     public static final String REGISTER = "/register.html";
     public static final String LIST = "/note/list";
     public static final String ADD_NOTE = "/note/add";
+    public static final String EDIT_NOTE = "/edit/";
+    public static final String DEL_NOTE = "/del/";
 
 
     public static final int REQUEST_OK = 200;
 
+    public static final String TEST_TOKEN = "e95c11613ba647299142e789beb8a0af";
 
     /**
      * 返回完整URL
@@ -52,4 +55,5 @@ public class Constant {
 
     public static final String TEST_CONTENT = "《失控》成书于1994年，作者是《连线》杂志的创始主编凯文·凯利。这本书所记述的，是他对当时科技、社会和经济最前沿的一次漫游，以及借此所窥得的未来图景";
 
+    public static final String TOKEN_FILE  = "token.my";
 }

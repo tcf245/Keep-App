@@ -1,9 +1,11 @@
 package com.cynbean.keep;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,15 +15,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cynbean.keep.fragment.NotesFragment;
 import com.cynbean.keep.util.BaseApplication;
+import com.cynbean.keep.util.Constant;
+import com.cynbean.keep.util.FileUtil;
+
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private Toolbar mToolbar;
+    private TextView tvInfo;
+
+    private BaseApplication application = BaseApplication.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +42,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
+        tvInfo = (TextView) findViewById(R.id.tvInfo);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         if (fab != null) {
@@ -50,18 +64,44 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        Log.i("MainActivity : " ,"MainActivity start.");
         BaseApplication application = BaseApplication.getInstance();
-        if(application.getToken() == ""){
-            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-            startActivityForResult(intent, 0);
-        }
+        String token = Constant.TEST_TOKEN;
+//        if(!token.equals("") && token != null){
+//            switchToNote();
+//        }else{
+//            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+//            startActivityForResult(intent, 0);
+//        }
 
-        if (application.getToken() != ""){
-            switchToNote();
-        }
+        switchToNote();
 
+
+        /** token写入文件 */
+//        try {
+////          token = FileUtils.readFileToString(new File(Constant.TOKEN_FILE));
+//            token = FileUtil.readFile(Constant.TOKEN_FILE,MainActivity.this);
+//            Log.d("MainActivity  token",token);
+//            tvInfo.setText(token);
+//            if(!token.equals("") && token != null){
+//                application.setToken(token);
+//                switchToNote();
+//            }else{
+//                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+//                startActivityForResult(intent, 0);
+//            }
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            Toast.makeText(MainActivity.this, "获取token失败，请重新登录", Toast.LENGTH_SHORT).show();
+//            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+//            startActivityForResult(intent, 0);
+//        }
     }
 
+    /**
+     * 启动NoteFragment
+     */
     private void switchToNote() {
         getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, new NotesFragment()).commit();
         mToolbar.setTitle("Notes");
@@ -130,9 +170,14 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_send) {
 
         }else if (id == R.id.nav_logout) {
-            BaseApplication application = BaseApplication.getInstance();
+//            try {
+//                FileUtil.clearFile(Constant.TOKEN_FILE,MainActivity.this);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                Toast.makeText(MainActivity.this, "退出失败", Toast.LENGTH_SHORT).show();
+//            }
             application.setToken("");
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
             startActivityForResult(intent, 0);
         }
 

@@ -13,6 +13,14 @@ import android.widget.Toast;
 
 import com.cynbean.keep.request.UserRequest;
 import com.cynbean.keep.util.BaseApplication;
+import com.cynbean.keep.util.Constant;
+import com.cynbean.keep.util.FileUtil;
+
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -26,7 +34,8 @@ public class LoginActivity extends AppCompatActivity {
 
     @Bind(R.id.input_email)
     EditText _emailText;
-    @Bind(R.id.input_password) EditText _passwordText;
+    @Bind(R.id.input_password)
+    EditText _passwordText;
     @Bind(R.id.btn_login)
     Button _loginButton;
     @Bind(R.id.link_signup)
@@ -78,18 +87,53 @@ public class LoginActivity extends AppCompatActivity {
 
 
         UserRequest userRequest = new UserRequest();
-        userRequest.loginAsynRequest(username,password);
+        userRequest.loginAsynRequest(username, password, new UserRequest.UserResponse<Map<String, Object>>() {
+            @Override
+            public void onData(Map<String, Object> data) {
+                try {
 
-        BaseApplication application = BaseApplication.getInstance();
+                    Log.d("Login data", data.toString());
+                    String token = (String) data.get("data");
+                    boolean flag = (boolean) data.get("flag");
+                    String msg = (String) data.get("msg");
 
-        if(application.getToken() != ""){
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            startActivityForResult(intent, 0);
-        }else{
-            Toast.makeText(this, "登录失败", Toast.LENGTH_SHORT).show();
-        }
+                    if(!token.equals("")){
+                        BaseApplication application = BaseApplication.getInstance();
+                        application.setToken(token);
+                        Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivityForResult(intent, 0);
+                    }
 
 
+//                    if (!token.equals("") && token != null) {
+//                        try {
+////                          FileUtils.writeStringToFile(new File(Constant.TOKEN_FILE),token);
+//                            FileUtil.writeFile(Constant.TOKEN_FILE, token, LoginActivity.this);
+//                            Log.d("token", token);
+//                            System.out.println("token" + token);
+//                            Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_SHORT).show();
+//                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+//                            startActivityForResult(intent, 0);
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                            Toast.makeText(LoginActivity.this, "写入token失败", Toast.LENGTH_SHORT).show();
+//                        }
+//                    }
+                } catch (Exception e) {
+                    Toast.makeText(LoginActivity.this, "登录失败。", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+//        BaseApplication application = BaseApplication.getInstance();
+//
+//        if(application.getToken() != ""){
+//            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+//            startActivityForResult(intent, 0);
+//        }else{
+//            Toast.makeText(this, "登录失败", Toast.LENGTH_SHORT).show();
+//        }
 
 
         new android.os.Handler().postDelayed(

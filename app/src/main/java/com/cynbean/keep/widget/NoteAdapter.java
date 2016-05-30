@@ -13,6 +13,7 @@ import com.cynbean.keep.entity.Note;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * NoteAdapter
@@ -20,10 +21,10 @@ import java.util.List;
  */
 public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
 
-    private List<Note> notes = new ArrayList<Note>();
+    private List<Object> notes = new ArrayList<Object>();
     private Context mContext;
 
-    public NoteAdapter(List<Note> notes, Context mContext) {
+    public NoteAdapter(List<Object> notes, Context mContext) {
         this.notes = notes;
         this.mContext = mContext;
     }
@@ -40,9 +41,9 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(NoteAdapter.ViewHolder holder, int position) {
         // 给ViewHolder设置元素
-        Note note = notes.get(position);
-        holder.tvTitle.setText(note.getTitle());
-        holder.tvContent.setText(note.getContent());
+        Map<String,Object> note = (Map<String, Object>) notes.get(position);
+        holder.tvTitle.setText((String)note.get("title"));
+        holder.tvContent.setText((String) note.get("content"));
     }
 
     @Override
@@ -51,9 +52,9 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
         return notes == null ? 0 : notes.size();
     }
 
-    public Note getNote(int position){
-        Note note = notes.get(position);
-        return note == null ? null : note;
+    public Object getNote(int position){
+        Map<String,Object> note = (Map<String, Object>) notes.get(position);
+        return note;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder{

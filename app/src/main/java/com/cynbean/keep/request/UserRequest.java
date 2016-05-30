@@ -1,6 +1,9 @@
 package com.cynbean.keep.request;
 
+import android.widget.Toast;
+
 import com.alibaba.fastjson.JSON;
+import com.cynbean.keep.SignupActivity;
 import com.cynbean.keep.entity.Note;
 import com.cynbean.keep.util.BaseApplication;
 import com.cynbean.keep.util.Constant;
@@ -29,7 +32,9 @@ import java.util.Map;
  */
 public class UserRequest {
 
-    private HttpClient client = new DefaultHttpClient();
+    public interface UserResponse<T>{
+        void onData(T data);
+    }
 
 
     /**
@@ -39,7 +44,7 @@ public class UserRequest {
      *
      * {"data":"8bca21caf5b444bdb0528e168afe6ea6","flag":true,"msg":"sucesess!"}
      */
-    public static void loginAsynRequest(String username,String password){
+    public static void loginAsynRequest(String username,String password,final UserResponse<Map<String,Object>> response){
 
         AsyncHttpClient client = new AsyncHttpClient(true, 80, 443);
 
@@ -47,20 +52,23 @@ public class UserRequest {
         params.put("username", username);
         params.put("password", password);
 
-        client.get(Constant.getAbsoluteUrl(username + Constant.LOGIN), params, new AsyncHttpResponseHandler() {
+        client.post(Constant.getAbsoluteUrl(username + Constant.LOGIN), params, new AsyncHttpResponseHandler() {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 String json = responseBody.toString();
-                Map<String,Object> map = (Map<String, Object>) JSON.parse(json);
-                String token = (String) map.get("data");
-                boolean flag = (boolean) map.get("flag");
-                String msg = (String) map.get("msg");
+                Map<String, Object> map = (Map<String, Object>) JSON.parse(json);
 
-                if (!token.equals("") && token != null){
-                    BaseApplication application = BaseApplication.getInstance();
-                    application.setToken(token);
-                }
+                response.onData(map);
+
+//                String token = (String) map.get("data");
+//                boolean flag = (boolean) map.get("flag");
+//                String msg = (String) map.get("msg");
+//
+//                if (!token.equals("") && token != null){
+//                    BaseApplication application = BaseApplication.getInstance();
+//                    application.setToken(token);
+//                }
             }
 
             @Override
@@ -77,7 +85,7 @@ public class UserRequest {
      *
      * {"flag":true,"msg":"注册成功！"}
      */
-    public static void registerAsynRequest(String username,String password){
+    public static void registerAsynRequest(String username,String password,final UserResponse<Map<String,Object>> response){
 
         AsyncHttpClient client = new AsyncHttpClient(true, 80, 443);
 
@@ -85,15 +93,17 @@ public class UserRequest {
         params.put("username", username);
         params.put("password", password);
 
-        client.get(Constant.getAbsoluteUrl(Constant.REGISTER), params, new AsyncHttpResponseHandler() {
+        client.post(Constant.getAbsoluteUrl(Constant.REGISTER), params, new AsyncHttpResponseHandler() {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 String json = responseBody.toString();
-                Map<String,Object> map = (Map<String, Object>) JSON.parse(json);
+                Map<String, Object> map = (Map<String, Object>) JSON.parse(json);
 
-                boolean flag = (boolean) map.get("flag");
-                String msg = (String) map.get("msg");
+
+                response.onData(map);
+//                boolean flag = (boolean) map.get("flag");
+//                String msg = (String) map.get("msg");
 
             }
 
@@ -103,6 +113,9 @@ public class UserRequest {
         });
     }
 
+
+
+    private HttpClient client = new DefaultHttpClient();
 
     /**
      * 用户登录请求

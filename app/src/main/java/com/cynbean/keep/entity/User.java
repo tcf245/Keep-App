@@ -8,8 +8,11 @@ import java.util.List;
  */
 public class User implements Serializable{
     private int id;
-    private String username;
+    private String account;
     private String password;
+    private String expireTime;
+    private String token;
+    private String createTime;
 
     private List<Note> notes;
 
@@ -21,12 +24,12 @@ public class User implements Serializable{
         this.id = id;
     }
 
-    public String getUsername() {
-        return username;
+    public String getAccount() {
+        return account;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setAccount(String account) {
+        this.account = account;
     }
 
     public String getPassword() {
@@ -52,20 +55,20 @@ public class User implements Serializable{
 
         User user = (User) o;
 
-        return username.equals(user.username);
+        return account.equals(user.account);
 
     }
 
     @Override
     public int hashCode() {
-        return username.hashCode();
+        return account.hashCode();
     }
 
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", username='" + username + '\'' +
+                ", account='" + account + '\'' +
                 ", password='" + password + '\'' +
                 ", notes=" + notes +
                 '}';
