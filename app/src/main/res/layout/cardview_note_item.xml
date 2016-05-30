@@ -7,11 +7,11 @@
     android:layout_marginLeft="@dimen/card_margin"
     android:layout_marginRight="@dimen/card_margin"
     android:clickable="true"
-    android:background="@color/colorAccent"
     app:cardElevation="10dp">
 
     <LinearLayout
         style="@style/CardView.Content"
+        android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">

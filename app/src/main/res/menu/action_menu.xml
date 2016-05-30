@@ -1,8 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.example.actionbartest.MainActivity" >
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.example.actionbartest.MainActivity">
 
+    <item
+        android:id="@+id/action_change_folder"
+        android:icon="@drawable/ic_material_color_light"
+        android:title="@string/action_change_folder"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/action_add_picture"
+        android:icon="@drawable/ic_material_camera_light"
+        android:title="@string/action_add_picture"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/action_archive"
+        android:icon="@drawable/ic_material_archive_light"
+        android:title="@string/action_archive"
+        app:showAsAction="always"/>
     <item
         android:id="@+id/tags"
         android:icon="@drawable/ic_local_offer_white_24dp"

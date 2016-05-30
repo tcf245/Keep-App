@@ -1,5 +1,7 @@
 package com.cynbean.keep.util;
 
+import com.cynbean.keep.R;
+
 /**
  * Created by BFD_303 on 2016/5/2.
  */
@@ -28,6 +30,34 @@ public class Constant {
      */
     public static String getAbsoluteUrl(String s) {
         return Constant.BASE_URL + s;
+    }
+
+    /**
+     * 颜色
+     * @param i
+     * @return
+     */
+    public static int getColor(int i){
+        switch(i){
+            case 1:
+                return R.color.red;
+            case 2:
+                return R.color.green;
+            case 3:
+                return R.color.yello;
+            case 4:
+                return R.color.blue;
+            case 5:
+                return R.color.red_light;
+            case 6:
+                return R.color.green_light;
+            case 7:
+                return R.color.yello_light;
+            case 8:
+                return R.color.blue_light;
+            default: return R.color.white;
+        }
+//        return R.color.white;
     }
 
     /**

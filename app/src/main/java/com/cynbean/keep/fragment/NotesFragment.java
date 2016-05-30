@@ -84,9 +84,6 @@ public class NotesFragment extends Fragment {
             }
         });
 
-
-
-
         setUpFAB(view);
         return view;
     }

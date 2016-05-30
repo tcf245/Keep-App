@@ -1,15 +1,18 @@
 package com.cynbean.keep.widget;
 
 import android.content.Context;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
 import com.cynbean.keep.R;
 import com.cynbean.keep.entity.Note;
+import com.cynbean.keep.util.Constant;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +45,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
     public void onBindViewHolder(NoteAdapter.ViewHolder holder, int position) {
         // 给ViewHolder设置元素
         Map<String,Object> note = (Map<String, Object>) notes.get(position);
+        holder.card.setBackgroundColor(mContext.getResources().getColor(Constant.getColor((Integer) note.get("color"))));
         holder.tvTitle.setText((String)note.get("title"));
         holder.tvContent.setText((String) note.get("content"));
     }
@@ -61,9 +65,11 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
 
         private TextView tvTitle;
         private TextView tvContent;
+        private LinearLayout card;
 
         public ViewHolder(View itemView) {
             super(itemView);
+            card = (LinearLayout) itemView.findViewById(R.id.card);
             tvTitle = (TextView) itemView.findViewById(R.id.tvTitle);
             tvContent = (TextView) itemView.findViewById(R.id.tvContent);
         }

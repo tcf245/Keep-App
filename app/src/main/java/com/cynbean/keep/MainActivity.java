@@ -2,6 +2,7 @@ package com.cynbean.keep;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -27,6 +28,8 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -55,14 +58,7 @@ public class MainActivity extends AppCompatActivity
             });
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        initDrawer();
 
         Log.i("MainActivity : " ,"MainActivity start.");
         BaseApplication application = BaseApplication.getInstance();
@@ -106,6 +102,50 @@ public class MainActivity extends AppCompatActivity
         getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, new NotesFragment()).commit();
         mToolbar.setTitle("Notes");
     }
+
+    /**
+     * 初始化抽屉数据
+     */
+    private void initDrawer() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        Menu menu = navigationView.getMenu();
+
+        // TODO 为了使文件夹列表能够全部取消选中
+        MenuItem mItemNoFolder = menu.add(R.id.group_folder, Menu.NONE, Menu.NONE,
+                getResources().getString(R.string.no_folder)).setVisible(false);
+        addFolderItem(menu);
+
+        menu.setGroupCheckable(R.id.group_folder, true, true);
+//        menu.setGroupCheckable(R.id.group_tag, true, false);
+//        menu.setGroupCheckable(R.id.group_location, true, false);
+    }
+
+    /**
+     * 添加抽屉文件夹项
+     */
+    private void addFolderItem(Menu menu) {
+
+        int[] folderColors = {R.color.red, R.color.green,
+                R.color.yello, R.color.blue};
+        String[] colorNames = {"RED","GREEN","YELLOW","BLUE"};
+
+        for (int i = 0; i < 4; i++) {
+            MenuItem item = menu.add(R.id.group_folder, Menu.NONE, Menu.NONE,
+                    colorNames[i])
+                    .setCheckable(true).setIcon(R.drawable.ic_folder_white_24dp);
+            item.setIcon(item.getIcon().mutate());
+            item.getIcon().setColorFilter(getResources().getColor(folderColors[i]), PorterDuff.Mode.MULTIPLY);
+        }
+    }
+
 
     @Override
     public void onBackPressed() {
@@ -157,17 +197,9 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        if (id == R.id.item_all) {
 
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.item_archive) {
 
         }else if (id == R.id.nav_logout) {
 //            try {
