@@ -1,10 +1,7 @@
 package com.cynbean.keep.widget;
 
 import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import android.support.design.widget.FloatingActionButton;
@@ -25,17 +22,18 @@ import com.alibaba.fastjson.JSON;
 import com.bumptech.glide.Glide;
 import com.cynbean.keep.MainActivity;
 import com.cynbean.keep.R;
+import com.cynbean.keep.TagsActivity;
 import com.cynbean.keep.entity.Note;
 import com.cynbean.keep.request.NoteRequest;
 import com.cynbean.keep.util.BaseApplication;
 import com.cynbean.keep.util.Constant;
+import com.cynbean.keep.util.DataResponse;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -62,17 +60,21 @@ public class NoteDetailActivity extends AppCompatActivity{
     private Note newNote = new Note();
     private Note rawNote = new Note();
     private LinearLayout detailLayout;
+    private int colorID = 1;
+    private TextView lastUpdate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.note_details);
 
+        lastUpdate = (TextView) findViewById(R.id.lastUpdate);
         detailLayout = (LinearLayout) findViewById(R.id.detailLayout);
         etTitle = (EditText) findViewById(R.id.editTextTitle);
         etContent = (EditText) findViewById(R.id.editTextContent);
-        tvUpdateTime = (TextView) findViewById(R.id.tvUpdataTime);
+//        tvUpdateTime = (TextView) findViewById(R.id.tvUpdataTime);
         img = (ImageView) findViewById(R.id.img);
+
 
         bottom = (Toolbar) findViewById(R.id.toolbar);
         setFAB();
@@ -86,10 +88,9 @@ public class NoteDetailActivity extends AppCompatActivity{
         super.onStop();
 
         newNote.setTitle(etTitle.getText().toString());
-        newNote.setColor(0);
+        newNote.setColor(colorID);
         newNote.setContent(etContent.getText().toString());
-        newNote.setCreate_time(new Date());
-        newNote.setUpdate_time(new Date());
+        newNote.setPic("");
 
         if(isNew){
             addNote();
@@ -111,8 +112,8 @@ public class NoteDetailActivity extends AppCompatActivity{
                 R.id.iv_color_3, R.id.iv_color_4, R.id.iv_color_5,
                 R.id.iv_color_6, R.id.iv_color_7, R.id.iv_color_8};
         final List<Integer> idList = new ArrayList<>(Arrays.asList(ids));
-        int colorID = (int) note.get("color");
-        ImageView iv = (ImageView) view.findViewById(ids[colorID - 1]);
+        colorID = (int) note.get("color");
+        ImageView iv = (ImageView) view.findViewById(ids[getIndex(colorID)]);
         iv.setImageResource(R.drawable.ic_color_picker_swatch_selected);
 
         builder.setTitle(R.string.color_picker);
@@ -129,6 +130,10 @@ public class NoteDetailActivity extends AppCompatActivity{
             });
         }
         dialog.show();
+    }
+
+    public int getIndex(int i){
+        return i - 1 < 0 ? 0 : i-1;
     }
 
     private void changeColor(int i) {
@@ -149,9 +154,11 @@ public class NoteDetailActivity extends AppCompatActivity{
             isNew = false;
             id = (int) note.get("id");
             initColor();
+            colorID = (int) note.get("color");
+            lastUpdate.setText((String) note.get("updateTime"));
             etTitle.setText((String) note.get("title"));
             etContent.setText((String) note.get("content"));
-            tvUpdateTime.setText((String) note.get("createTime"));
+//            tvUpdateTime.setText((String) note.get("createTime"));
             Glide.with(img.getContext())
                     .load(Constant.BASE_URL + note.get("pic"))
                     .fitCenter()
@@ -173,17 +180,18 @@ public class NoteDetailActivity extends AppCompatActivity{
      */
     public void addNote(){
 
-        noteRequest.addNotes(application.getToken(), newNote, new NoteRequest.NoteResponse<Map<String, Object>>() {
+        noteRequest.addNotes(application.getToken(), newNote, new DataResponse<Map<String, Object>>() {
             @Override
-            public void onData(Map<String, Object> data) {
+            public List<Map<String, Object>> onData(Map<String, Object> data) {
                 boolean flag = (boolean) data.get("flag");
                 String msg = (String) data.get("msg");
-                Toast.makeText(NoteDetailActivity.this, "msg", Toast.LENGTH_SHORT).show();
+                Toast.makeText(NoteDetailActivity.this, msg, Toast.LENGTH_SHORT).show();
                 if(flag){
 
                 }else{
-                    addNote();
+//                    addNote();
                 }
+                return null;
             }
         });
     }
@@ -192,17 +200,18 @@ public class NoteDetailActivity extends AppCompatActivity{
      * 修改记事
      */
     public void updateNote(){
-        noteRequest.updateNote(application.getToken(), newNote, new NoteRequest.NoteResponse<Map<String, Object>>() {
+        noteRequest.updateNote(application.getToken(), newNote, new DataResponse<Map<String, Object>>() {
             @Override
-            public void onData(Map<String, Object> data) {
+            public List<Map<String, Object>> onData(Map<String, Object> data) {
                 boolean flag = (boolean) data.get("flag");
                 String msg = (String) data.get("msg");
-                Toast.makeText(NoteDetailActivity.this, "msg", Toast.LENGTH_SHORT).show();
+                Toast.makeText(NoteDetailActivity.this, msg, Toast.LENGTH_SHORT).show();
                 if (flag) {
 
                 } else {
                     updateNote();
                 }
+                return null;
             }
         });
     }
@@ -254,11 +263,16 @@ public class NoteDetailActivity extends AppCompatActivity{
             case R.id.action_archive:
                 archiveNote();
                 return true;
-            case R.id.action_add_picture:
-                Toast.makeText(this, "Pic", Toast.LENGTH_SHORT).show();
+//            case R.id.action_add_picture:
+//                Toast.makeText(this, "Pic", Toast.LENGTH_SHORT).show();
+//                return true;
+            case R.id.action_share:
+                shareNote();
                 return true;
             case R.id.tags:
                 Toast.makeText(this, "Tags", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, TagsActivity.class);
+                startActivity(intent);
                 return true;
             case R.id.action_settings:
                 Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
@@ -268,8 +282,32 @@ public class NoteDetailActivity extends AppCompatActivity{
         }
     }
 
+    private void shareNote() {
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, (String)note.get("title"));
+        sendIntent.putExtra(Intent.EXTRA_TEXT, (String)note.get("content"));
+        sendIntent.setType("text/plain");
+        startActivity(sendIntent);
+    }
+
     private void archiveNote() {
         note.put("status",1);
+
+        noteRequest.deleteNotes(application.getToken(), (Integer) note.get("id"), new DataResponse<Map<String, Object>>() {
+            @Override
+            public List<Map<String, Object>> onData(Map<String, Object> data) {
+                boolean flag = (boolean) data.get("flag");
+                String msg = (String) data.get("msg");
+                Toast.makeText(NoteDetailActivity.this, msg, Toast.LENGTH_SHORT).show();
+                if(flag){
+
+                }else{
+                    addNote();
+                }
+                return null;
+            }
+        });
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }

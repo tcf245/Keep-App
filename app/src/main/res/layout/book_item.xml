@@ -6,32 +6,45 @@
     android:layout_marginBottom="@dimen/card_margin"
     android:layout_marginLeft="@dimen/card_margin"
     android:layout_marginRight="@dimen/card_margin"
-    app:cardCornerRadius="10dp"
     android:clickable="true"
+    app:cardCornerRadius="10dp"
     app:cardElevation="10dp">
 
     <LinearLayout
         style="@style/CardView.Content"
-        android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/ivBook"
+            android:transitionName="@string/transition_book_img"
+            android:layout_width="109dp"
+            android:layout_height="135dp"
+            android:src="@drawable/book1" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tvTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="CardView"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                />
+                android:textColor="@color/colorPrimary" />
 
             <TextView
-                android:id="@+id/tvContent"
+                android:id="@+id/tvDesc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:text="@string/card_content"
-                />
+                android:text="@string/book_description_1"
+                android:textColor="@color/colorPrimaryDark" />
         </LinearLayout>
+
+    </LinearLayout>
 
 </android.support.v7.widget.CardView>

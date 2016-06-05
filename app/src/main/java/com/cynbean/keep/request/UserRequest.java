@@ -1,5 +1,6 @@
 package com.cynbean.keep.request;
 
+import android.util.Log;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
@@ -7,6 +8,8 @@ import com.cynbean.keep.SignupActivity;
 import com.cynbean.keep.entity.Note;
 import com.cynbean.keep.util.BaseApplication;
 import com.cynbean.keep.util.Constant;
+import com.cynbean.keep.util.DataResponse;
+import com.cynbean.keep.util.MyAsyncHttpResponseHandler;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -24,6 +27,7 @@ import org.apache.http.message.BasicNameValuePair;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,9 +36,9 @@ import java.util.Map;
  */
 public class UserRequest {
 
-    public interface UserResponse<T>{
-        void onData(T data);
-    }
+//    public interface UserResponse<T>{
+//        void onData(T data);
+//    }
 
 
     /**
@@ -44,7 +48,7 @@ public class UserRequest {
      *
      * {"data":"8bca21caf5b444bdb0528e168afe6ea6","flag":true,"msg":"sucesess!"}
      */
-    public static void loginAsynRequest(String username,String password,final UserResponse<Map<String,Object>> response){
+    public static void loginAsynRequest(String username,String password,final DataResponse<Map<String,Object>> response){
 
         AsyncHttpClient client = new AsyncHttpClient(true, 80, 443);
 
@@ -52,29 +56,7 @@ public class UserRequest {
         params.put("username", username);
         params.put("password", password);
 
-        client.post(Constant.getAbsoluteUrl(username + Constant.LOGIN), params, new AsyncHttpResponseHandler() {
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                String json = responseBody.toString();
-                Map<String, Object> map = (Map<String, Object>) JSON.parse(json);
-
-                response.onData(map);
-
-//                String token = (String) map.get("data");
-//                boolean flag = (boolean) map.get("flag");
-//                String msg = (String) map.get("msg");
-//
-//                if (!token.equals("") && token != null){
-//                    BaseApplication application = BaseApplication.getInstance();
-//                    application.setToken(token);
-//                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-            }
-        });
+        client.post(Constant.getAbsoluteUrl(Constant.LOGIN), params, new MyAsyncHttpResponseHandler(response));
     }
 
 
@@ -85,7 +67,7 @@ public class UserRequest {
      *
      * {"flag":true,"msg":"注册成功！"}
      */
-    public static void registerAsynRequest(String username,String password,final UserResponse<Map<String,Object>> response){
+    public static void registerAsynRequest(String username,String password,final DataResponse<Map<String,Object>> response){
 
         AsyncHttpClient client = new AsyncHttpClient(true, 80, 443);
 
@@ -93,27 +75,25 @@ public class UserRequest {
         params.put("username", username);
         params.put("password", password);
 
-        client.post(Constant.getAbsoluteUrl(Constant.REGISTER), params, new AsyncHttpResponseHandler() {
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                String json = responseBody.toString();
-                Map<String, Object> map = (Map<String, Object>) JSON.parse(json);
-
-
-                response.onData(map);
-//                boolean flag = (boolean) map.get("flag");
-//                String msg = (String) map.get("msg");
-
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-            }
-        });
+        client.post(Constant.getAbsoluteUrl(Constant.REGISTER), params, new MyAsyncHttpResponseHandler(response));
     }
 
+    /**
+     * 更新用户密码请求
+     * @param token   用户token
+     * @param password
+     * @param response
+     */
+    public static void updateAsynRequest(String token,String password,final DataResponse<Map<String,Object>> response){
 
+        AsyncHttpClient client = new AsyncHttpClient(true, 80, 443);
+
+        RequestParams params = new RequestParams();
+        params.put("token", token);
+        params.put("newpwd", password);
+
+        client.post(Constant.getAbsoluteUrl(Constant.UPDATE_USER), params, new MyAsyncHttpResponseHandler(response));
+    }
 
     private HttpClient client = new DefaultHttpClient();
 

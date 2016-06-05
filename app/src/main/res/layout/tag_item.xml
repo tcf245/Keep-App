@@ -19,7 +19,7 @@
 
 
     <TextView
-        android:id="@+id/tv"
+        android:id="@+id/tvTag"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"

@@ -13,9 +13,11 @@ public class BaseApplication extends Application {
 
     private BaseApplication(){};
 
-    public static BaseApplication getInstance(){
-        BaseApplication application = new BaseApplication();
-        return application;
+    private static class SingletonHolder {
+        private static final BaseApplication INSTANCE = new BaseApplication();
+    }
+    public static final BaseApplication getInstance() {
+        return SingletonHolder.INSTANCE;
     }
 
     public String getToken() {
@@ -25,5 +27,7 @@ public class BaseApplication extends Application {
     public void setToken(String token) {
         this.token = token;
     }
+
+
 
 }

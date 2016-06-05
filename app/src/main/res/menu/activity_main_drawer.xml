@@ -16,13 +16,25 @@
             android:icon="@drawable/ic_material_lightbulb_light"
             android:title="@string/entries"/>
         <item
-            android:id="@+id/item_archive"
-            android:icon="@drawable/ic_material_archive_light"
-            android:title="@string/archive"/>
+            android:id="@+id/nav_books"
+            android:icon="@drawable/ic_material_lightbulb_light"
+            android:title="Books" />
+        <item
+            android:id="@+id/nav_game"
+            android:icon="@drawable/ic_material_lightbulb_light"
+            android:title="Game" />
         <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_material_lightbulb_light"
             android:title="Logout" />
+    </group>
+    <group
+        android:id="@+id/group_setting"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_changepass"
+            android:icon="@drawable/ic_material_lightbulb_light"
+            android:title="Change Password" />
     </group>
 
 

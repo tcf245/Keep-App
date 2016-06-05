@@ -12,7 +12,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cynbean.keep.request.UserRequest;
+import com.cynbean.keep.util.DataResponse;
 
+import java.util.List;
 import java.util.Map;
 
 import butterknife.Bind;
@@ -76,16 +78,19 @@ public class SignupActivity extends AppCompatActivity {
         String password = _passwordText.getText().toString();
 
         UserRequest userRequest = new UserRequest();
-        userRequest.registerAsynRequest(email, password, new UserRequest.UserResponse<Map<String, Object>>() {
+        userRequest.registerAsynRequest(email, password, new DataResponse<Map<String, Object>>() {
             @Override
-            public void onData(Map<String, Object> data) {
+            public List<Map<String, Object>> onData(Map<String, Object> data) {
+
                 try {
                     boolean flag = (boolean) data.get("flag");
                     String msg = (String) data.get("msg");
+                    Toast.makeText(SignupActivity.this, msg, Toast.LENGTH_SHORT).show();
                     if (flag) {
-                        Toast.makeText(SignupActivity.this, "恭喜注册成功，请登录。。", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                         startActivityForResult(intent, 0);
+                    }else{
+                        Toast.makeText(SignupActivity.this, msg, Toast.LENGTH_SHORT).show();
                     }
                 }catch(Exception e){
                     Toast.makeText(SignupActivity.this, "注册失败，请检查网络情况", Toast.LENGTH_SHORT).show();
@@ -93,6 +98,7 @@ public class SignupActivity extends AppCompatActivity {
                     startActivityForResult(intent, 0);
                 }
 
+                return null;
             }
         });
 

@@ -1,13 +1,9 @@
 package com.cynbean.keep;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -16,28 +12,21 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cynbean.keep.book.BooksFragment;
+import com.cynbean.keep.db.TokenDao;
 import com.cynbean.keep.fragment.NotesFragment;
+import com.cynbean.keep.game.GameActivity;
 import com.cynbean.keep.util.BaseApplication;
-import com.cynbean.keep.util.Constant;
-import com.cynbean.keep.util.FileUtil;
-
-import org.apache.commons.io.FileUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private Toolbar mToolbar;
-    private TextView tvInfo;
-
-    private BaseApplication application = BaseApplication.getInstance();
+    private TokenDao tokenDao;
+    private NavigationView navigationView;
+    private BaseApplication application ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,39 +34,29 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
-        tvInfo = (TextView) findViewById(R.id.tvInfo);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        if (fab != null) {
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-                }
-            });
-        }
+        application = BaseApplication.getInstance();
 
         initDrawer();
 
-        Log.i("MainActivity : " ,"MainActivity start.");
-        BaseApplication application = BaseApplication.getInstance();
-        String token = Constant.TEST_TOKEN;
-//        if(!token.equals("") && token != null){
-//            switchToNote();
-//        }else{
-//            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-//            startActivityForResult(intent, 0);
-//        }
-
-        switchToNote();
-
+        Log.i("GameActivity : " ,"GameActivity start.");
+        tokenDao = new TokenDao(this);
+        String token = tokenDao.getToken();
+        if(token.equals("") || token == null){
+            Toast.makeText(MainActivity.this, "获取Token失败，请重新登录", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivityForResult(intent, 0);
+        }else {
+            Log.i("登录成功  token ==>",token);
+            application.setToken(token);
+            switchToNote();
+        }
 
         /** token写入文件 */
 //        try {
 ////          token = FileUtils.readFileToString(new File(Constant.TOKEN_FILE));
-//            token = FileUtil.readFile(Constant.TOKEN_FILE,MainActivity.this);
-//            Log.d("MainActivity  token",token);
+//            token = FileUtil.readFile(Constant.TOKEN_FILE,GameActivity.this);
+//            Log.d("GameActivity  token",token);
 //            tvInfo.setText(token);
 //            if(!token.equals("") && token != null){
 //                application.setToken(token);
@@ -89,7 +68,7 @@ public class MainActivity extends AppCompatActivity
 //
 //        } catch (IOException e) {
 //            e.printStackTrace();
-//            Toast.makeText(MainActivity.this, "获取token失败，请重新登录", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(GameActivity.this, "获取token失败，请重新登录", Toast.LENGTH_SHORT).show();
 //            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
 //            startActivityForResult(intent, 0);
 //        }
@@ -99,8 +78,16 @@ public class MainActivity extends AppCompatActivity
      * 启动NoteFragment
      */
     private void switchToNote() {
-        getSupportFragmentManager().beginTransaction().add(R.id.frameLayout, new NotesFragment()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new NotesFragment()).commit();
         mToolbar.setTitle("Notes");
+    }
+
+    /**
+     * 启动BooksFragment
+     */
+    private void switchToBook() {
+        getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new BooksFragment()).commit();
+        mToolbar.setTitle("Books");
     }
 
     /**
@@ -113,7 +100,7 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         Menu menu = navigationView.getMenu();
@@ -175,6 +162,18 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.action_settings) {
             return true;
         }
+        if (id == R.id.tags){
+            Toast.makeText(this, "Tags", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, TagsActivity.class);
+            startActivity(intent);
+            return true;
+        }
+//        if(id =  R.id.tags){
+//            Toast.makeText(this, "Tags", Toast.LENGTH_SHORT).show();
+//            Intent intent = new Intent(this, TagsActivity.class);
+//            startActivity(intent);
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -190,6 +189,30 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * 根据选中的文件夹来列出相关条目
+     * 单选
+     */
+    private void updateRecyclerViewByFolder(MenuItem menuItem) {
+
+        int id = menuItem.getItemId();
+
+
+//        // 取消选中其他所有的项
+//        Menu menu = navigationView.getMenu();
+//        for (int i = 3; i < menu.size(); i++) {
+//            menu.getItem(i).setChecked(false);
+//        }
+//        menu.findItem(R.id.item_all).setChecked(true);
+//
+//
+//        menuItem.setChecked(true);
+//        getEntriesByFolder(menuItem.getTitle().toString());
+//        updateRecyclerView();
+//        mDrawerLayout.closeDrawers();
+
+    }
+
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -197,19 +220,31 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
+        int groupId = item.getGroupId();
+        if (groupId == R.id.group_folder){
+            updateRecyclerViewByFolder(item);
+        }
+
         if (id == R.id.item_all) {
-
-        } else if (id == R.id.item_archive) {
-
+            switchToNote();
+        }else if (id == R.id.nav_books){
+            switchToBook();
+        }
+//        else if (id == R.id.item_archive) {
+//
+//        }
+        else if (id == R.id.nav_changepass) {
+            Intent intent = new Intent(getApplicationContext(), PasswordActivity.class);
+            startActivity(intent);
         }else if (id == R.id.nav_logout) {
-//            try {
-//                FileUtil.clearFile(Constant.TOKEN_FILE,MainActivity.this);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//                Toast.makeText(MainActivity.this, "退出失败", Toast.LENGTH_SHORT).show();
-//            }
             application.setToken("");
+            tokenDao.delete();
+            Toast.makeText(MainActivity.this, "已退出，请重新登录。", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivityForResult(intent, 0);
+        } else if(id == R.id.nav_game){
+            Toast.makeText(MainActivity.this, "欢迎进入。", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getApplicationContext(), GameActivity.class);
             startActivityForResult(intent, 0);
         }
 
@@ -217,4 +252,5 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
 }

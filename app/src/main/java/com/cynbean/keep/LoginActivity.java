@@ -11,15 +11,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cynbean.keep.db.TokenDao;
 import com.cynbean.keep.request.UserRequest;
-import com.cynbean.keep.util.BaseApplication;
-import com.cynbean.keep.util.Constant;
-import com.cynbean.keep.util.FileUtil;
+import com.cynbean.keep.util.DataResponse;
 
-import org.apache.commons.io.FileUtils;
-
-import java.io.File;
-import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.Bind;
@@ -87,49 +83,88 @@ public class LoginActivity extends AppCompatActivity {
 
 
         UserRequest userRequest = new UserRequest();
-        userRequest.loginAsynRequest(username, password, new UserRequest.UserResponse<Map<String, Object>>() {
+        userRequest.loginAsynRequest(username, password, new DataResponse<Map<String, Object>>() {
             @Override
-            public void onData(Map<String, Object> data) {
+            public List<Map<String, Object>> onData(Map<String, Object> data) {
                 try {
-
                     Log.d("Login data", data.toString());
                     String token = (String) data.get("data");
-                    boolean flag = (boolean) data.get("flag");
+                    boolean flag = false;
+                    flag = (boolean) data.get("flag");
                     String msg = (String) data.get("msg");
 
-                    if(!token.equals("")){
-                        BaseApplication application = BaseApplication.getInstance();
-                        application.setToken(token);
-                        Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_SHORT).show();
+                    if (flag){
+                        TokenDao tokenDao = new TokenDao(LoginActivity.this);
+                        tokenDao.insert(token);
                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                         startActivityForResult(intent, 0);
+                    }else{
+                        if(msg != null ){
+                            Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_SHORT).show();
+                        }else{
+                            Toast.makeText(LoginActivity.this, "网络连接失败，请检查网络。。", Toast.LENGTH_SHORT).show();
+                        }
+
+                        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                        startActivityForResult(intent, 0);
                     }
-
-
-//                    if (!token.equals("") && token != null) {
-//                        try {
-////                          FileUtils.writeStringToFile(new File(Constant.TOKEN_FILE),token);
-//                            FileUtil.writeFile(Constant.TOKEN_FILE, token, LoginActivity.this);
-//                            Log.d("token", token);
-//                            System.out.println("token" + token);
-//                            Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_SHORT).show();
-//                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-//                            startActivityForResult(intent, 0);
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                            Toast.makeText(LoginActivity.this, "写入token失败", Toast.LENGTH_SHORT).show();
-//                        }
-//                    }
-                } catch (Exception e) {
+            }catch(Exception e){
                     Toast.makeText(LoginActivity.this, "登录失败。", Toast.LENGTH_SHORT).show();
                 }
+                return null;
             }
         });
+
+//        userRequest.loginAsynRequest(username, password, new UserRequest.UserResponse<Map<String, Object>>() {
+//            @Override
+//            public void onData(Map<String, Object> data) {
+//                try {
+//
+//                    Log.d("Login data", data.toString());
+//                    String token = (String) data.get("data");
+//                    boolean flag = (boolean) data.get("flag");
+//                    String msg = (String) data.get("msg");
+//
+//                    if (flag){
+//                        TokenDao tokenDao = new TokenDao(LoginActivity.this);
+//                        tokenDao.insert(token);
+//                    }else{
+//                        Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_SHORT).show();
+//                    }
+//
+////                    if(!token.equals("")){
+////                        BaseApplication application = BaseApplication.getInstance();
+////                        application.setToken(token);
+////                        Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_SHORT).show();
+////                        Intent intent = new Intent(getApplicationContext(), GameActivity.class);
+////                        startActivityForResult(intent, 0);
+////                    }
+//
+//
+////                    if (!token.equals("") && token != null) {
+////                        try {
+//////                          FileUtils.writeStringToFile(new File(Constant.TOKEN_FILE),token);
+////                            FileUtil.writeFile(Constant.TOKEN_FILE, token, LoginActivity.this);
+////                            Log.d("token", token);
+////                            System.out.println("token" + token);
+////                            Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_SHORT).show();
+////                            Intent intent = new Intent(getApplicationContext(), GameActivity.class);
+////                            startActivityForResult(intent, 0);
+////                        } catch (IOException e) {
+////                            e.printStackTrace();
+////                            Toast.makeText(LoginActivity.this, "写入token失败", Toast.LENGTH_SHORT).show();
+////                        }
+////                    }
+//                } catch (Exception e) {
+//                    Toast.makeText(LoginActivity.this, "登录失败。", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        });
 
 //        BaseApplication application = BaseApplication.getInstance();
 //
 //        if(application.getToken() != ""){
-//            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+//            Intent intent = new Intent(getApplicationContext(), GameActivity.class);
 //            startActivityForResult(intent, 0);
 //        }else{
 //            Toast.makeText(this, "登录失败", Toast.LENGTH_SHORT).show();
@@ -162,7 +197,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        // Disable going back to the MainActivity
+        // Disable going back to the GameActivity
         moveTaskToBack(true);
     }
 

@@ -1,8 +1,8 @@
 package com.cynbean.keep.fragment;
 
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -15,18 +15,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.cynbean.keep.request.DataTest;
 import com.cynbean.keep.request.NoteRequest;
 import com.cynbean.keep.util.BaseApplication;
-import com.cynbean.keep.util.Constant;
+import com.cynbean.keep.util.DataResponse;
 import com.cynbean.keep.widget.NoteAdapter;
 import com.cynbean.keep.widget.NoteDetailActivity;
 import com.cynbean.keep.R;
 import com.cynbean.keep.widget.RecycleItemClickListener;
-import com.cynbean.keep.entity.Note;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,55 +39,88 @@ public class NotesFragment extends Fragment {
     private ProgressBar mProgressBar;
     private FloatingActionButton mFabButton;
     private List<Object> notes = new ArrayList<Object>();
-
+    private BaseApplication application;
     private static final int ANIM_DURATION_FAB = 400;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = getView(inflater);
+
+        application = BaseApplication.getInstance();
+        Log.i("NoteFragment:", "Note Fragment start");
+
+        return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        initData();
+    }
+
+    /**
+     * 初始化view
+     * @param inflater
+     * @return
+     */
+    @NonNull
+    private View getView(LayoutInflater inflater) {
         View view = inflater.inflate(R.layout.fragment_notelist, null);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.addOnItemTouchListener(new RecycleItemClickListener(getActivity(), onItemClickListener));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-
         mProgressBar = (ProgressBar) view.findViewById(R.id.progressBar);
-
-        Log.i("NoteFragment:","Note Fragment start");
-        //获取测试数据
-//        DataTest dataTest = new DataTest();
-//        notes = dataTest.getTestData();
-
-        BaseApplication application = BaseApplication.getInstance();
-        Log.i("token:",Constant.TEST_TOKEN);
-        NoteRequest noteRequest = new NoteRequest();
-        noteRequest.findAllNotes(Constant.TEST_TOKEN, new NoteRequest.NoteResponse<Map<String, Object>>() {
-            @Override
-            public void onData(Map<String, Object> data) {
-                try {
-                    Log.i("request all notes : ", (String) data.get("msg"));
-                    Log.i("NOTES data ==> ", data.get("data").toString());
-                    notes = (List<Object>) data.get("data");
-                    Log.i("notes size ===>", notes.size() + "");
-                }catch(NullPointerException e){
-                    Log.e("NullPointerException" , "data is null");
-                }
-
-                //将数据与context封装进adapter
-                mAdapter = new NoteAdapter(notes, getContext());
-                mRecyclerView.setAdapter(mAdapter);
-            }
-        });
-
         setUpFAB(view);
         return view;
     }
 
-//    public List<Note> getData(){
-//        return notes = (List<Note>) dbRead.query("note",null,null,null,null,null,null);
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        initData();
 //    }
+
+    /**
+     * 请求记事数据
+     *
+     */
+    private void initData() {
+        Log.i("token:", application.getToken());
+        NoteRequest noteRequest = new NoteRequest();
+        noteRequest.findAllNotes(application.getToken(), new DataResponse<Map<String, Object>>() {
+            @Override
+            public List<Map<String, Object>> onData(Map<String, Object> data) {
+
+                try {
+                    boolean flag = (boolean) data.get("flag");
+                    String msg = (String) data.get("msg");
+                    notes = (List<Object>) data.get("data");
+
+                    if(flag){
+                        Log.i("NOTES data ==> ", data.get("data").toString());
+                        Log.i("notes size ===>", notes.size() + "");
+                        //将数据与context封装进adapter
+                        mAdapter = new NoteAdapter(notes, getContext());
+                        mRecyclerView.setAdapter(mAdapter);
+                        mProgressBar.setVisibility(View.INVISIBLE);
+                    }else{
+                        Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+                    }
+
+                }catch(NullPointerException e){
+                    Log.e("NullPointerException" , "data is null");
+                }
+
+
+                return null;
+            }
+        });
+    }
 
     /**
      * 新增记事操作
@@ -118,7 +148,6 @@ public class NotesFragment extends Fragment {
                 .setDuration(ANIM_DURATION_FAB)
                 .start();
     }
-
 
     /**
      * 查看记事操作

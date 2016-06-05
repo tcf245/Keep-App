@@ -24,14 +24,26 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".TagsActivity"
+            android:label="Tags"/>
+        <activity
             android:name=".widget.NoteDetailActivity"
             android:label="Note"/>
         <activity
             android:name=".LoginActivity"
             android:label="Login"/>
         <activity
-            android:name=".SignupActivity"
-            android:label="Signup"/>
+        android:name=".SignupActivity"
+        android:label="Signup"/>
+        <activity
+            android:name=".PasswordActivity"
+            android:label="Change Password"/>
+        <activity
+            android:name=".game.GameActivity"
+            android:label="2048"/>
+        <activity
+            android:name=".book.BookDetailActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
 
     </application>
 
